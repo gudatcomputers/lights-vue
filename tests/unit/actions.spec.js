@@ -19,25 +19,37 @@ describe('actions', () => {
     })
 
     context('when Tommy wants to turn the light off', () => {
+      beforeEach(() => {
+        updateLightState({}, {
+          isLightOn: false,
+          hue: '0',
+          sat: '0',
+          bri: '0'
+        })
+      })
+
       it('makes an http put request', () => {
-        updateLightState({}, false)
         expect(updateLightHttpRequest.called('http://192.168.1.100/api/pbCR-nMeHM23nX8li4i3JpTnNWLNYWZqOt42T1kR/lights/1/state')).to.be.true()
         const requestBody = JSON.parse(updateLightHttpRequest.lastOptions().body)
-        expect(requestBody).to.eql({ on: false })
+        expect(requestBody).to.eql({ on: false, hue: 0, sat: 0, bri: 0 })
       })
     })
 
     context('when Tommy wants to turn the light on', () => {
+      beforeEach(() => {
+        updateLightState({}, { isLightOn: true, hue: '7500', sat: '400', bri: '323' })
+      })
+
       it('makes an http put request', () => {
-        updateLightState({}, true)
         expect(updateLightHttpRequest.called('http://192.168.1.100/api/pbCR-nMeHM23nX8li4i3JpTnNWLNYWZqOt42T1kR/lights/1/state')).to.be.true()
         const requestBody = JSON.parse(updateLightHttpRequest.lastOptions().body)
-        expect(requestBody).to.eql({ on: true })
+        expect(requestBody).to.eql({
+          on: true,
+          hue: 7500,
+          sat: 400,
+          bri: 323
+        })
       })
     })
   })
 })
-
-// pbCR-nMeHM23nX8li4i3JpTnNWLNYWZqOt42T1kR
-
-// http://192.168.1.100/api/pbCR-nMeHM23nX8li4i3JpTnNWLNYWZqOt42T1kR/lights/1/state

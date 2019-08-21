@@ -6,8 +6,7 @@ import td from 'testdouble'
 const localVue = createLocalVue()
 
 describe('HomePage', () => {
-
-  let wrapper, vm
+  let wrapper
   let store, actions
 
   beforeEach(() => {
@@ -23,11 +22,10 @@ describe('HomePage', () => {
     wrapper = shallowMount(HomePage, {
       store, localVue
     })
-    vm = wrapper.vm
   })
 
   it('shows that the light is off', () => {
-    expect(wrapper.find('label').text()).to.include('Off')
+    expect(wrapper.find('p').text()).to.include('Off')
   })
 
   context('when the light is off', () => {
@@ -37,13 +35,31 @@ describe('HomePage', () => {
         button.trigger('click')
       })
 
-      it('sets the status label', () => {
-        expect(wrapper.find('label').text()).to.include('On')
+      it('sets the status', () => {
+        expect(wrapper.find('p').text()).to.include('On')
       })
 
       it('delegates to the updateLightState action', () => {
-        td.verify(actions.updateLightState(td.matchers.anything(), true, undefined))
+        td.verify(actions.updateLightState(td.matchers.anything(), {
+          isLightOn: true,
+          hue: undefined,
+          sat: undefined,
+          bri: undefined
+        }, undefined))
       })
+    })
+  })
+
+  context('changing the light color', () => {
+    beforeEach(() => {
+      wrapper.find('input#hue').setValue(4500)
+      wrapper.find('input#saturation').setValue(200)
+      wrapper.find('input#brightness').setValue(150)
+      wrapper.find('button').trigger('click')
+    })
+
+    it('delegates to the updateLightState action', () => {
+      td.verify(actions.updateLightState(td.matchers.anything(), { isLightOn: true, hue: '4500', sat: '200', bri: '150' }, undefined))
     })
   })
 })
